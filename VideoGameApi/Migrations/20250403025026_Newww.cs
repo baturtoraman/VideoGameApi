@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace VideoGameApi.Migrations
 {
     /// <inheritdoc />
-    public partial class mumtask : Migration
+    public partial class Newww : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -77,7 +77,8 @@ namespace VideoGameApi.Migrations
                     Title = table.Column<string>(type: "varchar(5)", maxLength: 5, nullable: false),
                     Platform = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true),
                     DeveloperId = table.Column<int>(type: "int", nullable: true),
-                    PublisherId = table.Column<int>(type: "int", nullable: true)
+                    PublisherId = table.Column<int>(type: "int", nullable: true),
+                    ImageUrl = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -141,12 +142,12 @@ namespace VideoGameApi.Migrations
 
             migrationBuilder.InsertData(
                 table: "VideoGames",
-                columns: new[] { "Id", "DeveloperId", "Platform", "PublisherId", "Title" },
+                columns: new[] { "Id", "DeveloperId", "ImageUrl", "Platform", "PublisherId", "Title" },
                 values: new object[,]
                 {
-                    { 1, null, "PS5", null, "Spid" },
-                    { 2, null, "Nintendo Switch", null, "Th" },
-                    { 3, null, "PC", null, "Cyb" }
+                    { 1, null, null, "PS5", null, "Spid" },
+                    { 2, null, null, "Nintendo Switch", null, "Th" },
+                    { 3, null, null, "PC", null, "Cyb" }
                 });
 
             migrationBuilder.CreateIndex(

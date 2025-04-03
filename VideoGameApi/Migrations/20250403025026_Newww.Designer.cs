@@ -12,8 +12,8 @@ using VideoGameApi.Data;
 namespace VideoGameApi.Migrations
 {
     [DbContext(typeof(VideoGameDbContext))]
-    [Migration("20250331174822_mumtask")]
-    partial class mumtask
+    [Migration("20250403025026_Newww")]
+    partial class Newww
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -135,6 +135,10 @@ namespace VideoGameApi.Migrations
 
                     b.Property<int?>("DeveloperId")
                         .HasColumnType("int");
+
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("Platform")
                         .HasMaxLength(50)
