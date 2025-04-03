@@ -56,12 +56,12 @@ namespace VideoGameApi.Controllers
         //    }
         //}
 
-        //redise bağlanamazsa log atsın ama işlemlere devam etsin
-        //middlewarede error varsa exception değil de response model dönsün
-        //bi middleware daha yaz 5 saniye cevap alamazsam, middlewareden generic şuan sistem hata veriyor gibi bi hata
+        //redise bağlanamazsa log atsın ama işlemlere devam etsin +
+        //middlewarede error varsa exception değil de response model dönsün +
+        //bi middleware daha yaz 5 saniye cevap alamazsam, middlewareden generic şuan sistem hata veriyor gibi bi hata+
         //minio devam
-        //vscodea geç
-        //githuba yükle
+        //vscodea geç+
+        //githuba yükle+
         [HttpGet]
         public async Task<ActionResult<List<VideoGameDto>>> GetVideoGames()
         {
@@ -92,7 +92,7 @@ namespace VideoGameApi.Controllers
                 {
                     var redisVideoGames = videoGamesDb.Select(vg =>
                     {
-                        vg.Title = $"{vg.Title} (Redis)";
+                        vg.Title = $"{vg.Title}";
                         return vg;
                     }).ToList();
 
