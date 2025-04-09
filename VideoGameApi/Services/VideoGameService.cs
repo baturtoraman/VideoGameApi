@@ -7,7 +7,8 @@ using VideoGameApi.Models.Converters;
 using VideoGameApi.Models;
 using VideoGameApi.Responses;
 using VideoGameApi.Validators;
-//using Minio;
+using Minio;
+using Minio.DataModel.Args;
 
 
 namespace VideoGameApi.Services
@@ -16,64 +17,64 @@ namespace VideoGameApi.Services
     {
         private readonly VideoGameDbContext context;
         private readonly ILogger<VideoGameController> logger;
-        //private readonly IMinioClient minioClient;
+        private readonly IMinioClient minioClient;
 
-        public VideoGameService(ILogger<VideoGameController> logger, VideoGameDbContext context/*, IMinioClient minioClient*/)
+        public VideoGameService(ILogger<VideoGameController> logger, VideoGameDbContext context, IMinioClient minioClient)
         {
             this.context = context;
             this.logger = logger;
-            //this.minioClient = minioClient;
+            this.minioClient = minioClient;
         }
 
-        //public async Task<ResponseModel<string?>> UploadImageAsync(int id, IFormFile image)
-        //{
-        //    logger.LogInformation("Begin: UploadImageAsync");
+        public async Task<ResponseModel<string?>> UploadImageAsync(int id, IFormFile image)
+        {
+           logger.LogInformation("Begin: UploadImageAsync");
 
-        //    try
-        //    {
-        //        var game = await context.VideoGames.FindAsync(id);
-        //        if (game == null)
-        //        {
-        //            return new ResponseModel<string?>(false, ResponseMessages.VideoGameNotFound, null);
-        //        }
+           try
+           {
+               var game = await context.VideoGames.FindAsync(id);
+               if (game == null)
+               {
+                   return new ResponseModel<string?>(false, ResponseMessages.VideoGameNotFound, null);
+               }
 
-        //        if (image == null || image.Length == 0)
-        //        {
-        //            return new ResponseModel<string?>(false, "No file uploaded", null);
-        //        }
+               if (image == null || image.Length == 0)
+               {
+                   return new ResponseModel<string?>(false, "No file uploaded", null);
+               }
 
-        //        var minioClient = new MinioClient()
-        //            .WithEndpoint("your-minio-endpoint")
-        //            .WithCredentials("your-access-key", "your-secret-key")
-        //            .Build();
+               var minioClient = new MinioClient()
+                   .WithEndpoint("your-minio-endpoint")
+                   .WithCredentials("your-access-key", "your-secret-key")
+                   .Build();
 
-        //        var bucketName = "your-bucket-name";
-        //        var objectName = $"images/{id}/{image.FileName}";
+               var bucketName = "your-bucket-name";
+               var objectName = $"images/{id}/{image.FileName}";
 
-        //        using (var stream = image.OpenReadStream())
-        //        {
-        //            var putObjectArgs = new PutObjectArgs()
-        //                .WithBucket(bucketName)
-        //                .WithObject(objectName)
-        //                .WithStreamData(stream)
-        //                .WithObjectSize(image.Length)
-        //                .WithContentType(image.ContentType);
+                using (var stream = image.OpenReadStream())
+                {
+                    var putObjectArgs = new PutObjectArgs()
+                        .WithBucket(bucketName)
+                        .WithObject(objectName)
+                        .WithStreamData(stream)
+                        .WithObjectSize(image.Length)
+                        .WithContentType(image.ContentType);
 
-        //            await minioClient.PutObjectAsync(putObjectArgs);
-        //        }
+                    await minioClient.PutObjectAsync(putObjectArgs);
+                }
 
-        //        game.ImageUrl = $"https://{bucketName}.your-minio-domain/{objectName}";
+               game.ImageUrl = $"https://{bucketName}.your-minio-domain/{objectName}";
 
-        //        await context.SaveChangesAsync();
+               await context.SaveChangesAsync();
 
-        //        return new ResponseModel<string?>(true, "Image uploaded successfully", game.ImageUrl);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        logger.LogError($"Error uploading image: {ex.Message}");
-        //        return new ResponseModel<string?>(false, "An error occurred while uploading the image.", null);
-        //    }
-        //}
+               return new ResponseModel<string?>(true, "Image uploaded successfully", game.ImageUrl);
+           }
+           catch (Exception ex)
+           {
+               logger.LogError($"Error uploading image: {ex.Message}");
+               return new ResponseModel<string?>(false, "An error occurred while uploading the image.", null);
+           }
+        }
 
 
         public async Task<ResponseModel<List<VideoGameDto>>> GetVideoGamesAsync()

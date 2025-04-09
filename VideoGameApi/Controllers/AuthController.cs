@@ -1,8 +1,8 @@
-﻿using JwtAuthDotNet9.Entities;
-using JwtAuthDotNet9.Models;
+﻿using JwtAuthDotNet9.Models;
 using JwtAuthDotNet9.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using VideoGameApi.Entities;
 
 namespace JwtAuthDotNet9.Controllers
 {
@@ -13,30 +13,35 @@ namespace JwtAuthDotNet9.Controllers
     {
         [AllowAnonymous]
         [HttpPost("register")]
-        public async Task<ActionResult<User>> Register(UserDto request)
+        public async Task<IActionResult> Register(UserDto request)
         {
-            var user = await authService.RegisterAsync(request);
-            if (user is null)
-                return BadRequest("Username already exists.");
+            var response = await authService.RegisterAsync(request);
+            if (response == null)
+                return BadRequest("Username or email already exists.");
 
-            return Ok(user);
+            return Ok(new
+            {
+                Message = "User registered successfully. Use the token to verify your email.",
+                VerificationToken = response.Data!.VerificationToken
+            });
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<ActionResult<TokenResponseDto>> Login(UserDto request)
+        public async Task<IActionResult> Login(UserDto request)
         {
             var result = await authService.LoginAsync(request);
-            if (result is null)
+            if (result == null)
                 return BadRequest("Invalid username or password.");
 
             return Ok(result);
         }
 
         [HttpPost("refresh-token")]
-        public async Task<ActionResult<TokenResponseDto>> RefreshToken(RefreshTokenRequestDto request)
+        public async Task<IActionResult> RefreshToken(RefreshTokenRequestDto request)
         {
             var result = await authService.RefreshTokensAsync(request);
-            if (result is null || result.AccessToken is null || result.RefreshToken is null)
+            if (result == null)
                 return Unauthorized("Invalid refresh token.");
 
             return Ok(result);
@@ -52,7 +57,7 @@ namespace JwtAuthDotNet9.Controllers
         [HttpGet("admin-only")]
         public IActionResult AdminOnlyEndpoint()
         {
-            return Ok("You are and admin!");
+            return Ok("You are an admin!");
         }
     }
 }

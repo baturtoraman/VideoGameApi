@@ -4,6 +4,8 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Minio;
+using Minio.DataModel;
 
 namespace VideoGameApi.Middleware
 {

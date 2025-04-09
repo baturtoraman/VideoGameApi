@@ -1,5 +1,4 @@
-﻿using JwtAuthDotNet9.Entities;
-using JwtAuthDotNet9.Models;
+﻿using JwtAuthDotNet9.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -8,6 +7,8 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using VideoGameApi.Data;
+using VideoGameApi.Entities;
+using VideoGameApi.Responses;
 
 namespace JwtAuthDotNet9.Services
 {
@@ -38,24 +39,36 @@ namespace JwtAuthDotNet9.Services
             };
         }
 
-        public async Task<User?> RegisterAsync(UserDto request)
+        public async Task<ResponseModel<CustomResponse>> RegisterAsync(UserDto request)
         {
-            if (await context.Users.AnyAsync(u => u.Username == request.Username))
+            try
             {
-                return null;
+                var user = new User
+                {
+                    Id = Guid.NewGuid(),
+                    Username = request.Username,
+                    Email = request.Email,
+                    PasswordHash = new PasswordHasher<User>().HashPassword(null, request.Password),
+                    Role = request.Role
+                };
+
+                context.Users.Add(user);
+                await context.SaveChangesAsync();
+
+                return new ResponseModel<CustomResponse>(true, "User registered successfully.", new CustomResponse
+                {
+                    Message = "User registered successfully.",
+                    VerificationToken = "GeneratedTokenHere"
+                });
             }
-
-            var user = new User();
-            var hashedPassword = new PasswordHasher<User>()
-                .HashPassword(user, request.Password);
-
-            user.Username = request.Username;
-            user.PasswordHash = hashedPassword;
-
-            context.Users.Add(user);
-            await context.SaveChangesAsync();
-
-            return user;
+            catch (DbUpdateException ex)
+            {
+                if (ex.InnerException?.Message.Contains("UNIQUE") == true)
+                {
+                    return new ResponseModel<CustomResponse>(false, "Email is already in use.", null);
+                }
+                return new ResponseModel<CustomResponse>(false, "An error occurred while registering the user.", null);
+            }
         }
 
         public async Task<TokenResponseDto?> RefreshTokensAsync(RefreshTokenRequestDto request)

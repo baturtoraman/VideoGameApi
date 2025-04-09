@@ -29,36 +29,37 @@ namespace VideoGameApi.Controllers
         }
 
 
-        //[HttpPost("upload-image/{id}")]
-        //public async Task<IActionResult> UploadImage(int id, [FromForm] IFormFile image)
-        //{
-        //    logger.LogInformation("Begin: UploadImage");
+        [HttpPost("upload-image/{id}")]
+        public async Task<IActionResult> UploadImage(int id, [FromForm] IFormFile image)
+        {
+           logger.LogInformation("Begin: UploadImage");
 
-        //    try
-        //    {
-        //        if (image == null || image.Length == 0)
-        //        {
-        //            return BadRequest(new { message = "No file uploaded" });
-        //        }
+           try
+           {
+               if (image == null || image.Length == 0)
+               {
+                   return BadRequest(new { message = "No file uploaded" });
+               }
 
-        //        var uploadResponse = await videoGameService.UploadImageAsync(id, image);
+               var uploadResponse = await videoGameService.UploadImageAsync(id, image);
 
-        //        if (!uploadResponse.Success)
-        //        {
-        //            return BadRequest(new { message = uploadResponse.Message });
-        //        }
+               if (!uploadResponse.Success)
+               {
+                   return BadRequest(new { message = uploadResponse.Message });
+               }
 
-        //        return Ok(new { message = "Image uploaded successfully" });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
-        //    }
-        //}
+               return Ok(new { message = "Image uploaded successfully" });
+           }
+           catch (Exception ex)
+           {
+               return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
+           }
+        }
 
         //redise bağlanamazsa log atsın ama işlemlere devam etsin +
         //middlewarede error varsa exception değil de response model dönsün +
-        //bi middleware daha yaz 5 saniye cevap alamazsam, middlewareden generic şuan sistem hata veriyor gibi bi hata+
+        //bi middleware daha yaz 2 saniye cevap alamazsam, middlewareden generic şuan sistem hata veriyor gibi bi hata+
+        //endpoint await task delay 2 saniyeden büyük olcak
         //minio devam
         //vscodea geç+
         //githuba yükle+
