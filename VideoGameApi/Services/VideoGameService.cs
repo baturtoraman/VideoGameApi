@@ -84,7 +84,6 @@ namespace VideoGameApi.Services
             {
                 var games = await context.VideoGames
                     .Include(g => g.VideoGameDetails)
-                    .Include(g => g.Developer)
                     .Include(g => g.Publisher)
                     .Include(g => g.Genres)
                     .ToListAsync();
@@ -176,7 +175,6 @@ namespace VideoGameApi.Services
 
             game.Title = updatedGame.Title;
             game.Platform = updatedGame.Platform;
-            game.Developer = updatedGame.Developer;
             game.Publisher = updatedGame.Publisher;
 
             try
@@ -220,5 +218,46 @@ namespace VideoGameApi.Services
                 return new ResponseModel<string?>(false, ResponseMessages.InternalServerError, null);
             }
         }
+
+        public async Task<ResponseModel<VideoGameDto>> PurchaseVideoGameAsync(int videoGameId, Guid userId)
+        {
+            var videoGame = await context.VideoGames.FindAsync(videoGameId);
+            if (videoGame == null)
+            {
+                return new ResponseModel<VideoGameDto>(false, "Video game not found.", null);
+            }
+
+            var user = await context.Users.FindAsync(userId);
+            if (user == null)
+            {
+                return new ResponseModel<VideoGameDto>(false, "User not found.", null);
+            }
+
+            if (videoGame.Stock <= 0)
+            {
+                return new ResponseModel<VideoGameDto>(false, "Video game is out of stock.", null);
+            }
+
+            if (user.Balance < videoGame.Price)
+            {
+                return new ResponseModel<VideoGameDto>(false, "Insufficient balance.", null);
+            }
+
+            user.Balance -= videoGame.Price;
+            videoGame.Stock -= 1;
+
+            await context.SaveChangesAsync();
+
+            var videoGameDto = new VideoGameDto
+            {
+                Id = videoGame.Id,
+                Title = videoGame.Title,
+                Platform = videoGame.Platform,
+                Price = videoGame.Price
+            };
+
+            return new ResponseModel<VideoGameDto>(true, "Purchase successful.", videoGameDto);
+        }
+
     }
 }

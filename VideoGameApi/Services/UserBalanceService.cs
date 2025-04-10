@@ -32,6 +32,12 @@ namespace VideoGameApi.Services
                 return new ResponseModel<decimal>(false, "User not found.", 0);
             }
 
+            // Negatif bakiye kontrolü
+            if (user.Balance + amount < 0)
+            {
+                return new ResponseModel<decimal>(false, "Insufficient balance.", user.Balance);
+            }
+
             user.Balance += amount;
             await _context.SaveChangesAsync();
 

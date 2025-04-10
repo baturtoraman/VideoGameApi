@@ -12,13 +12,13 @@ namespace VideoGameApi.Models.Converters
                 Id = videoGame.Id,
                 Title = videoGame.Title,
                 Platform = videoGame.Platform,
-                DeveloperId = videoGame.DeveloperId,
-                Developer = DeveloperConverter.ToDto(videoGame.Developer!),
                 PublisherId = videoGame.PublisherId,
                 Publisher = PublisherConverter.ToDto(videoGame.Publisher),
                 VideoGameDetails = videoGame.VideoGameDetails != null ? VideoGameDetailsConverter.ToDto(videoGame.VideoGameDetails) : null,
                 Genres = videoGame.Genres!.Select(g => g.ToDto()).ToList(),
-                ImageUrl = videoGame.ImageUrl
+                ImageUrl = videoGame.ImageUrl,
+                Stock = videoGame.Stock,
+                Price = videoGame.Price
             };
         }
 
@@ -29,13 +29,13 @@ namespace VideoGameApi.Models.Converters
                 Id = videoGameDto.Id,
                 Title = videoGameDto.Title,
                 Platform = videoGameDto.Platform,
-                DeveloperId = videoGameDto.DeveloperId,
-                Developer = DeveloperConverter.ToEntity(videoGameDto.Developer),
                 PublisherId = videoGameDto.PublisherId,
                 Publisher = PublisherConverter.ToEntity(videoGameDto.Publisher),
                 VideoGameDetails = videoGameDto.VideoGameDetails != null ? VideoGameDetailsConverter.ToEntity(videoGameDto.VideoGameDetails) : null,
                 Genres = videoGameDto.Genres?.Select(g => g.ToEntity()).ToList() ?? new List<Genre>(),
-                ImageUrl = videoGameDto.ImageUrl
+                ImageUrl = videoGameDto.ImageUrl,
+                Stock = videoGameDto.Stock,
+                Price = videoGameDto.Price
             };
 
             return videogame;

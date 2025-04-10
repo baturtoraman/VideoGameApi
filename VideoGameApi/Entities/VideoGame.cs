@@ -5,7 +5,7 @@ namespace VideoGameApi.Entities
 {
     public class VideoGame
     {
-        [Range(1, int.MaxValue, ErrorMessage = "Publisher ID must be a positive integer.")]
+[Range(1, int.MaxValue, ErrorMessage = "Publisher ID must be a positive integer.")]
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Title is required.")]
@@ -17,9 +17,6 @@ namespace VideoGameApi.Entities
         [Column(TypeName = "varchar(50)")]
         public string? Platform { get; set; }
 
-        public int? DeveloperId { get; set; }
-        public Developer? Developer { get; set; }
-
         public int? PublisherId { get; set; }
         public Publisher? Publisher { get; set; }
 
@@ -27,9 +24,16 @@ namespace VideoGameApi.Entities
 
         public List<Genre>? Genres { get; set; } = new List<Genre>();
 
-        //imageın uzantısını bilsen yeterli domaine gerek yok.
+        // Image URL
         [StringLength(50, ErrorMessage = "ImageUrl must be at most 50 characters.")]
         [Column(TypeName = "varchar(50)")]
         public string? ImageUrl { get; set; }
+
+        [Range(0, int.MaxValue, ErrorMessage = "Stock must be a non-negative integer.")]
+        public int Stock { get; set; } = 0;
+
+        [Range(0, double.MaxValue, ErrorMessage = "Price must be a non-negative value.")]
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal Price { get; set; } = 0;
     }
 }

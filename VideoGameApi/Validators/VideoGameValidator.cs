@@ -19,12 +19,6 @@ namespace VideoGameApi.Validators
                 .MaximumLength(50)
                 .WithMessage("Platform name cannot exceed 50 characters.");
 
-            RuleFor(x => DeveloperConverter.ToEntity(x.Developer))
-                .NotNull()
-                .WithMessage("Developer cannot be null.")
-                .SetValidator(new DeveloperValidator())
-                .WithMessage("Invalid developer data.");
-
             RuleFor(x => PublisherConverter.ToEntity(x.Publisher))
                 .NotNull()
                 .WithMessage("Publisher cannot be null.")

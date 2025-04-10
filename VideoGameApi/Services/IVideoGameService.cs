@@ -12,5 +12,6 @@ namespace VideoGameApi.Services
         Task<ResponseModel<VideoGame?>> AddVideoGameAsync(VideoGameDto newGameDto);
         Task<ResponseModel<string?>> UpdateVideoGameAsync(int id, VideoGameDto updatedGameDto);
         Task<ResponseModel<string?>> DeleteVideoGameAsync(int id);
+        Task<ResponseModel<VideoGameDto>> PurchaseVideoGameAsync(int videoGameId, Guid userId);
     }
 }

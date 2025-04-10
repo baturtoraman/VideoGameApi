@@ -8,9 +8,6 @@ namespace VideoGameApi.Models
         public string? Title { get; set; }
         public string? Platform { get; set; }
 
-        public int? DeveloperId { get; set; }
-        public required DeveloperDto Developer { get; set; }
-
         public int? PublisherId { get; set; }
         public PublisherDto? Publisher { get; set; }
 
@@ -19,5 +16,8 @@ namespace VideoGameApi.Models
         public List<GenreDto>? Genres { get; set; }
 
         public string? ImageUrl { get; set; }
+
+        public int Stock { get; set; }
+        public decimal Price { get; set; }
     }
 }

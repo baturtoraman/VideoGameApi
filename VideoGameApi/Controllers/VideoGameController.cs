@@ -56,13 +56,6 @@ namespace VideoGameApi.Controllers
            }
         }
 
-        //redise bağlanamazsa log atsın ama işlemlere devam etsin +
-        //middlewarede error varsa exception değil de response model dönsün +
-        //bi middleware daha yaz 2 saniye cevap alamazsam, middlewareden generic şuan sistem hata veriyor gibi bi hata+
-        //endpoint await task delay 2 saniyeden büyük olcak
-        //minio devam
-        //vscodea geç+
-        //githuba yükle+
         [HttpGet]
         public async Task<ActionResult<List<VideoGameDto>>> GetVideoGames()
         {
@@ -83,7 +76,6 @@ namespace VideoGameApi.Controllers
 
                 var videoGamesDb = await context.VideoGames
                     .Include(g => g.VideoGameDetails)
-                    .Include(g => g.Developer)
                     .Include(g => g.Publisher)
                     .Include(g => g.Genres)
                     .ToListAsync();
@@ -201,8 +193,29 @@ namespace VideoGameApi.Controllers
             {
                 return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
             }
-
         }
+
+        [HttpPost("{id}/purchase")]
+        public async Task<IActionResult> PurchaseVideoGame(int id, [FromBody] Guid userId)
+        {
+            logger.LogInformation("Begin: PurchaseVideoGame");
+
+            try
+            {
+                var response = await videoGameService.PurchaseVideoGameAsync(id, userId);
+                if (!response.Success)
+                {
+                    return BadRequest(new { message = response.Message });
+                }
+
+                return Ok(new { message = "Purchase successful", game = response.Data });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
+            }
+        }
+
         [HttpGet("/Batur1")]
         public IActionResult GetBatur()
         {
