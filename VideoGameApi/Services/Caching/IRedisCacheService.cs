@@ -6,5 +6,7 @@ namespace VideoGameApi.Services.Caching
     {
         T? GetData<T>(string key);
         public void SetData<T>(string key, T data);
+
+        void RemoveData(string key);
     }
 }

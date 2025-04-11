@@ -51,5 +51,18 @@ namespace VideoGameApi.Services.Caching
                 _logger.LogError(ex, "An error occurred while storing data in Redis for key: {Key}", key);
             }
         }
+
+        public void RemoveData(string key)
+        {
+            try
+            {
+                _cache.Remove(key);
+                _logger.LogInformation("Cache cleared for key: {Key}", key);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while removing data from Redis for key: {Key}", key);
+            }
+        }
     }
 }

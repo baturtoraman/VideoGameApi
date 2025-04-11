@@ -12,8 +12,8 @@ using VideoGameApi.Data;
 namespace VideoGameApi.Migrations
 {
     [DbContext(typeof(VideoGameDbContext))]
-    [Migration("20250403025026_Newww")]
-    partial class Newww
+    [Migration("20250411011908_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,55 +38,6 @@ namespace VideoGameApi.Migrations
                     b.HasIndex("VideoGamesId");
 
                     b.ToTable("GenreVideoGame");
-                });
-
-            modelBuilder.Entity("JwtAuthDotNet9.Entities.User", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RefreshToken")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("RefreshTokenExpiryTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("VideoGameApi.Entities.Developer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Developer");
                 });
 
             modelBuilder.Entity("VideoGameApi.Entities.Genre", b =>
@@ -125,6 +76,47 @@ namespace VideoGameApi.Migrations
                     b.ToTable("Publisher");
                 });
 
+            modelBuilder.Entity("VideoGameApi.Entities.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Balance")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RefreshTokenExpiryTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("Users");
+                });
+
             modelBuilder.Entity("VideoGameApi.Entities.VideoGame", b =>
                 {
                     b.Property<int>("Id")
@@ -132,9 +124,6 @@ namespace VideoGameApi.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("DeveloperId")
-                        .HasColumnType("int");
 
                     b.Property<string>("ImageUrl")
                         .HasMaxLength(50)
@@ -144,7 +133,13 @@ namespace VideoGameApi.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<int?>("PublisherId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Stock")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
@@ -153,8 +148,6 @@ namespace VideoGameApi.Migrations
                         .HasColumnType("varchar(5)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DeveloperId");
 
                     b.HasIndex("PublisherId");
 
@@ -165,18 +158,24 @@ namespace VideoGameApi.Migrations
                         {
                             Id = 1,
                             Platform = "PS5",
+                            Price = 5m,
+                            Stock = 3,
                             Title = "Spid"
                         },
                         new
                         {
                             Id = 2,
                             Platform = "Nintendo Switch",
+                            Price = 11m,
+                            Stock = 4,
                             Title = "Th"
                         },
                         new
                         {
                             Id = 3,
                             Platform = "PC",
+                            Price = 115m,
+                            Stock = 45,
                             Title = "Cyb"
                         });
                 });
@@ -224,15 +223,9 @@ namespace VideoGameApi.Migrations
 
             modelBuilder.Entity("VideoGameApi.Entities.VideoGame", b =>
                 {
-                    b.HasOne("VideoGameApi.Entities.Developer", "Developer")
-                        .WithMany()
-                        .HasForeignKey("DeveloperId");
-
                     b.HasOne("VideoGameApi.Entities.Publisher", "Publisher")
                         .WithMany("VideoGames")
                         .HasForeignKey("PublisherId");
-
-                    b.Navigation("Developer");
 
                     b.Navigation("Publisher");
                 });

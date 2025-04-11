@@ -17,13 +17,11 @@ namespace VideoGameApi.Services
     {
         private readonly VideoGameDbContext context;
         private readonly ILogger<VideoGameController> logger;
-        private readonly IMinioClient minioClient;
 
-        public VideoGameService(ILogger<VideoGameController> logger, VideoGameDbContext context, IMinioClient minioClient)
+        public VideoGameService(ILogger<VideoGameController> logger, VideoGameDbContext context)
         {
             this.context = context;
             this.logger = logger;
-            this.minioClient = minioClient;
         }
 
         public async Task<ResponseModel<string?>> UploadImageAsync(int id, IFormFile image)
@@ -219,32 +217,33 @@ namespace VideoGameApi.Services
             }
         }
 
-        public async Task<ResponseModel<VideoGameDto>> PurchaseVideoGameAsync(int videoGameId, Guid userId)
+        public async Task<ResponseModel<VideoGameDto>> PurchaseVideoGameAsync(PurchaseRequest request)
         {
-            var videoGame = await context.VideoGames.FindAsync(videoGameId);
-            if (videoGame == null)
-            {
-                return new ResponseModel<VideoGameDto>(false, "Video game not found.", null);
-            }
-
-            var user = await context.Users.FindAsync(userId);
+            var user = await context.Users.FindAsync(request.UserId);
             if (user == null)
             {
                 return new ResponseModel<VideoGameDto>(false, "User not found.", null);
             }
 
-            if (videoGame.Stock <= 0)
+            var videoGame = await context.VideoGames.FindAsync(request.VideoGameId);
+            if (videoGame == null)
             {
-                return new ResponseModel<VideoGameDto>(false, "Video game is out of stock.", null);
+                return new ResponseModel<VideoGameDto>(false, "Video game not found.", null);
             }
 
-            if (user.Balance < videoGame.Price)
+            if (videoGame.Stock < request.Quantity)
+            {
+                return new ResponseModel<VideoGameDto>(false, $"Insufficient stock for '{videoGame.Title}'. Available stock: {videoGame.Stock}.", null);
+            }
+
+            var totalCost = videoGame.Price * request.Quantity;
+            if (user.Balance < totalCost)
             {
                 return new ResponseModel<VideoGameDto>(false, "Insufficient balance.", null);
             }
 
-            user.Balance -= videoGame.Price;
-            videoGame.Stock -= 1;
+            user.Balance -= totalCost;
+            videoGame.Stock -= request.Quantity;
 
             await context.SaveChangesAsync();
 
@@ -253,7 +252,8 @@ namespace VideoGameApi.Services
                 Id = videoGame.Id,
                 Title = videoGame.Title,
                 Platform = videoGame.Platform,
-                Price = videoGame.Price
+                Price = videoGame.Price,
+                Stock = videoGame.Stock
             };
 
             return new ResponseModel<VideoGameDto>(true, "Purchase successful.", videoGameDto);
